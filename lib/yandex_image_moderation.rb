@@ -26,6 +26,8 @@ module YandexImageModeration
     end
 
     def parse_response(response)
+      return unless response.status == 200
+      JSON.parse response.body
     end
 
     def prepare_body(file)
