@@ -1,7 +1,8 @@
-require 'base64'
+require 'json'
 require 'yandex_image_moderation/version'
 require 'yandex_image_moderation/config'
 require 'yandex_image_moderation/http_client'
+require 'yandex_image_moderation/result'
 
 # YandexImageModeration gem code
 module YandexImageModeration
@@ -13,48 +14,29 @@ module YandexImageModeration
       @client ||= ::YandexImageModeration::NetHTTPClient.new(config)
     end
 
-    def boundary
-      @boundary ||= Base64.strict_encode64(Random.rand(4_611_686_018_427_387_903).to_s).gsub(/^([^=]+)/, '\1')
-    end
-
+    # Send a request for moderation
+    #
+    # @return [Result] an instance of the Result
     def moderate(file)
       return if file.nil? || !File.exist?(file)
 
-      url = @options.url
-      parse_response client.post(url, prepare_body(file),
-                                 'Content-Type' => "multipart/form-data, boundary=#{boundary}")
+      url = "#{config.url}?models=moderation,gender,pornography,ad"
+      parse_response client.post(url, prepare_body(file), {})
     end
 
+    protected
+
     def parse_response(response)
-      return unless response.status == 200
-      JSON.parse response.body
+      return unless response.code.to_i == 200
+      raise(::YandexImageModeration::Error::InvalidResult, 'empty response') if response.body.nil?
+      ::YandexImageModeration::Result.new JSON.parse(response.body)
     end
 
     def prepare_body(file)
-      post_body = prepare_file_body [], file
-      post_body = prepare_auth_body post_body, client: @options.client, token: @options.token
-      post_body << "--#{boundary}--\r\n"
-      post_body
-    end
-
-    def prepare_file_body(post_body, file)
-      post_body << "--#{boundary}\r\n"
-      post_body << "Content-Disposition: form-data; name=\"file\"; filename=\"#{File.basename(file)}\"\r\n"
-      post_body << "Content-Type: image/jpeg\r\n"
-      post_body << "Content-Transfer-Encoding: base64\r\n"
-      post_body << "\r\n"
-      post_body << Base64.encode64(File.read(file)).gsub(/\n/, "\r\n")
-      post_body
-    end
-
-    def prepare_auth_body(post_body, params)
-      params.each do |k, v|
-        post_body << "--#{boundary}\r\n"
-        post_body << "Content-Disposition: form-data; name=\"#{k}\"\r\n"
-        post_body << "\r\n"
-        post_body << "#{v}\r\n"
-      end
-      post_body
+      {
+        'file' => UploadIO.new(file, 'image/jpeg', File.basename(file)),
+        'token' => @options.config.token
+      }
     end
   end
 end

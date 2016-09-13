@@ -10,13 +10,13 @@ module YandexImageModeration
     def config
       @options ||= OptionSetter.new
       yield(@options.config) if block_given?
-      @options
+      @options.config
     end
 
     # Responsible for collecting options in the DSL and creating
     # lookup objects using those options.
     class OptionSetter
-      attr_reader :config
+      attr_accessor :config
 
       def initialize
         @config = OpenStruct.new
