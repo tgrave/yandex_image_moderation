@@ -60,4 +60,4 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/[USERN
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
 
-## Build Status [![Build Status](https://secure.travis-ci.org/panthomakos/timezone.png?branch=master)](http://travis-ci.org/panthomakos/timezone)
+## Build Status [![Build Status](https://secure.travis-ci.org/tgrave/yandex_image_moderation.png?branch=master)](http://travis-ci.org/tgrave/yandex_image_moderation)
