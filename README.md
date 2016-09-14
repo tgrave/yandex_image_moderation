@@ -99,7 +99,7 @@ You can check if the request was successful or not:
     answer.status
     # => "ok"
 
-Then you can access to the resulting data directly through *result* attribute:
+Then you can access to the resulting data directly through the *result* attribute:
 
     answer.result['ad']['predictedClass']
     # => "not_ads"
