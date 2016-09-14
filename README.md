@@ -1,8 +1,7 @@
 # YandexImageModeration
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/yandex_image_moderation`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+This gem provides a class for access to Yandex Image Moderation API
+(https://imagemoderation.yandexdatafactory.com/)
 
 ## Installation
 
@@ -20,22 +19,45 @@ Or install it yourself as:
 
     $ gem install yandex_image_moderation
 
+## Configuration
+
+For Yandex API access you have to provide an API key. Do it by calling config method of the YandexImageModeration class:
+
+```ruby
+YandexImageModeration.config do |c|
+  c.token = 'your_API_key'
+end
+```
+
+If you use Rails, this configuration would probably go into a proper initializer.
+
+In some cases you may need to change URL of the API (i.e. when you use not the SAAS API, but a docker version on your own server).
+To override the standard URL just add url attribute to the config. In the URL provide the path to the *moderate* service, do not add any parameters like *?model=moderate...*
+
+```ruby
+YandexImageModeration.config do |c|
+  c.url = 'http://your_server/path_to/moderate'
+  c.token = 'your_API_key'
+end
+```
+
 ## Usage
 
-TODO: Write usage instructions here
+To moderate an image (remember: Yandex API works with JPEG only) just call a *moderate* methods with a path to the image file as a parameter:
 
-## Development
+```ruby
+result = YandexImageModeration.moderate('/var/www/uploads/test.jpg')
+puts result
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```
 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/yandex_image_moderation.
 
-
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
 
+## Build Status [![Build Status](https://secure.travis-ci.org/panthomakos/timezone.png?branch=master)](http://travis-ci.org/panthomakos/timezone)
