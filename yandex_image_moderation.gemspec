@@ -9,15 +9,10 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Sergey Tsvetkov']
   spec.email         = ['stsvetkov@gmail.com']
 
-  spec.summary       = 'TODO: Write a short summary, because Rubygems requires one.'
-  spec.description   = 'TODO: Write a longer description or delete this line.'
-  spec.homepage      = ''
+  spec.summary       = "yandex_image_moderation-#{YandexImageModeration::VERSION}"
+  spec.description   = 'An interface for Yandex Image Moderation API'
+  spec.homepage      = 'https://github.com/tgrave/yandex_image_moderation'
   spec.license       = 'MIT'
-
-  # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
-  # to allow pushing to a single host or delete this section to allow pushing to any host.
-  raise 'RubyGems 2.0 or newer is required to protect against public gem pushes.' unless spec.respond_to?(:metadata)
-  spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = 'exe'
@@ -26,6 +21,6 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'minitest', '~> 5.8'
-  spec.add_development_dependency 'rspec-mock'
+  spec.add_development_dependency 'rspec-mocks'
   spec.add_development_dependency 'rubocop'
 end
