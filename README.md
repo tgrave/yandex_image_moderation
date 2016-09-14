@@ -45,16 +45,90 @@ end
 
 To moderate an image (remember: Yandex API works with JPEG only) just call a *moderate* methods with a path to the image file as a parameter:
 
-```ruby
-result = YandexImageModeration.moderate('/var/www/uploads/test.jpg')
-puts result
+    answer = YandexImageModeration.moderate('/var/www/uploads/test.jpg')
+    # => #<YandexImageModeration::Result:0x0055ae52e8a7a0
+     @data=
+      {"status"=>"ok",
+       "revision"=>"33e3dfd4d",
+       "revisionDate"=>"2016-08-29 17:06:06 +0300",
+       "result"=>
+        {"classification"=>
+          {"gender"=>
+            {"predictedClass"=>"male",
+             "scores"=>{"female"=>0.0752159, "male"=>0.924784}},
+           "moderation"=>
+            {"predictedClass"=>"other",
+             "scores"=>
+              {"other"=>0.998316,
+               "erotic"=>1.01304e-05,
+               "inappropriateOrChild"=>0.00149277,
+               "approvedPersonNotChild"=>3.49765e-05,
+               "many"=>0.000146203}},
+           "pornography"=>
+            {"predictedClass"=>"other",
+             "scores"=>{"explicit"=>9.50646e-09, "other"=>0.99999999049354}},
+           "ad"=>
+            {"predictedClass"=>"not_ads",
+             "scores"=>{"ads"=>0.0229261, "not_ads"=>0.977074}}}}},
+     @result=
+      {"gender"=>
+        {"predictedClass"=>"male",
+         "scores"=>{"female"=>0.0752159, "male"=>0.924784}},
+       "moderation"=>
+        {"predictedClass"=>"other",
+         "scores"=>
+          {"other"=>0.998316,
+           "erotic"=>1.01304e-05,
+           "inappropriateOrChild"=>0.00149277,
+           "approvedPersonNotChild"=>3.49765e-05,
+           "many"=>0.000146203}},
+       "pornography"=>
+        {"predictedClass"=>"other",
+         "scores"=>{"explicit"=>9.50646e-09, "other"=>0.99999999049354}},
+       "ad"=>
+        {"predictedClass"=>"not_ads",
+         "scores"=>{"ads"=>0.0229261, "not_ads"=>0.977074}}},
+     @status="ok">
 
+You can check if the request was successful or not:
 
-```
+    answer.good?
+    # => true
+    answer.bad?
+    # => false
+    answer.status
+    # => "ok"
+
+Then you can access to the resulting data directly through *result* attribute:
+
+    answer.result['ad']['predictedClass']
+    # => "not_ads"
+
+Also you can check either the image was classified as porn, erotic or ad and get scores for the classifications (scores are between 0 and 1):
+
+    answer.porn?
+    # => false
+    answer.erotic?
+    # => false
+    answer.ad?
+    # => false
+    answer.porn_score
+    # => 9.50646e-09
+    answer.erotic_score
+    # => 1.01304e-05
+    answer.ad_score
+    # => 0.0229261
+
+And another one shortcut is provided - for getting predicted class during moderation:
+
+    answer.predicted_class
+    # => "other"
+    
+For a clarification on the returned data, predicted classes and scores please consult Yandex Image Moderation API documentation. 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/yandex_image_moderation.
+Bug reports and pull requests are welcome on GitHub at https://github.com/tgrave/yandex_image_moderation.
 
 ## License
 
