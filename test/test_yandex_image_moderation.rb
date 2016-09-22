@@ -11,14 +11,14 @@ class TestYandexImageModeration < ::Minitest::Test
   end
 
   def stub_response(which)
-    allow(@response).to receive(:code).and_return(which == 'bad' ? '500' : '200')
+    allow(@response).to receive(:status).and_return(which == 'bad' ? 500 : 200)
     result = File.open("test/data/#{which}_response.json").read unless which == 'error'
-    allow(@response).to receive(:body).and_return(result)
+    allow(@response).to receive(:content).and_return(result)
   end
 
   def stub_post(which = 'good')
-    @client ||= instance_double ::YandexImageModeration::NetHTTPClient
-    @response ||= instance_double Net::HTTPOK
+    @client ||= instance_double ::YandexImageModeration::Client
+    @response ||= instance_double ::HTTP::Message
     stub_response which
     allow(@client).to receive(:post).and_return(@response)
     allow(::YandexImageModeration).to receive(:client).and_return(@client)
@@ -46,7 +46,7 @@ class TestYandexImageModeration < ::Minitest::Test
       c.url = nil
     end
     assert_raises ::YandexImageModeration::Error::InvalidConfig do
-      ::YandexImageModeration::NetHTTPClient.new(::YandexImageModeration.config)
+      ::YandexImageModeration::Client.new(::YandexImageModeration.config)
     end
     ::YandexImageModeration.config do |c|
       c.url = 'https://cv-albion.ydf.yandex.net/moderate'
@@ -63,7 +63,11 @@ class TestYandexImageModeration < ::Minitest::Test
 
   def test_moderate
     stub_post
+    # YandexImageModeration.config do |c|
+    #   c.token = 'c4c59cec-b273-4712-abce-7cb445024a1d'
+    # end
     result = ::YandexImageModeration.moderate('test/data/picture.jpg')
+    refute_nil result
     assert result.good?
     assert_equal result.ad_score, 0.0107738
     refute result.porn?

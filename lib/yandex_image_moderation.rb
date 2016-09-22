@@ -1,7 +1,7 @@
 require 'json'
 require 'yandex_image_moderation/version'
 require 'yandex_image_moderation/config'
-require 'yandex_image_moderation/http_client'
+require 'yandex_image_moderation/client'
 require 'yandex_image_moderation/result'
 
 # YandexImageModeration gem code
@@ -11,7 +11,7 @@ module YandexImageModeration
     #
     # @return [#post] an instance of a request handler
     def client
-      @client ||= ::YandexImageModeration::NetHTTPClient.new(config)
+      @client ||= ::YandexImageModeration::Client.new(config)
     end
 
     # Send a request for moderation
@@ -21,21 +21,21 @@ module YandexImageModeration
       return if file.nil? || !File.exist?(file)
 
       url = "#{config.url}?models=moderation,gender,pornography,ad"
-      parse_response client.post(url, prepare_body(file), {})
+      parse_response client.post(url, prepare_body(file))
     end
 
     protected
 
     def parse_response(response)
-      return unless response.code.to_i == 200
-      raise(::YandexImageModeration::Error::InvalidResult, 'empty response') if response.body.nil?
-      ::YandexImageModeration::Result.new JSON.parse(response.body)
+      return unless response.status == 200
+      raise(::YandexImageModeration::Error::InvalidResult, 'empty response') if response.content.nil?
+      ::YandexImageModeration::Result.new JSON.parse(response.content)
     end
 
     def prepare_body(file)
       {
-        'file' => UploadIO.new(file, 'image/jpeg', File.basename(file)),
-        'token' => @options.config.token
+        file: File.open(file, 'r'),
+        token: @options.config.token
       }
     end
   end
